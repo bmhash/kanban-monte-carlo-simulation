@@ -71,5 +71,4 @@ In order to use the tool and generate the results, you'll need to:
 <br><br>
 <br><br>
 
-## Authors and acknowledgment
-This has been adapted/forked from [Repo with code leverating ActionableAgile's tools](https://github.com/jabopiti/kanban-monte-carlo-simulation)
+If you like these topics and want to discuss project management stuff, consider visiting my page [here](https://bmhash.github.io/)
