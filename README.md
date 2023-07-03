@@ -1,7 +1,6 @@
 # Monte Carlo Simulations for a Kanban/Agile Flow
 
 <br><br>
-<br><br>
 
 ## WHY - Facts over Opinions
 
