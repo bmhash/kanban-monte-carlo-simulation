@@ -50,7 +50,7 @@ Then go to the *Extensions* pane on the left menu and search for Jupyter and ins
 - Jupyter Keymap
 - Jupyter Notebook Renderers
 
-After the installation, you can open the [MCS_When notebook](Generator/MCS_When.ipynb)
+After the installation, you can open the [MCS_When notebook](Notebook/Kanban-Monte_Carlo-When.ipynb)
 
 ### If you don't have VSCode installed
 
