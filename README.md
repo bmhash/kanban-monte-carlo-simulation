@@ -69,6 +69,13 @@ In order to use the tool and generate the results, you'll need to:
 - Jupyter Notebook Renderers 
 
 <br><br>
+
+# Major changes since the Fork
+
+1. Fixed the *Distribution of Monte Carlo Simulation 'When'* chart to properly pass the correct param in the simulation method
+2. Fixed the *Probabilities of Completion Dates* chart to properly calculate the percentiles from the distribution dataframe as process after the sampling from the MCS
+
+
 <br><br>
 
 If you like these topics and want to discuss project management stuff, consider visiting my page [here](https://bmhash.github.io/)

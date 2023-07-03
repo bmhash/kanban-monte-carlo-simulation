@@ -69,7 +69,6 @@ ax.axhline(y=0, color=lightgrey, alpha=.5);
 
 
 
-
 # %%
 
 # Monte Carlo Simulation with results generated in a histogram
@@ -80,7 +79,6 @@ SIMULATION_ITEMS = 100
 START_DATE = pd.to_datetime('2023-07-04')
 SIMULATIONS = 10000
 
-
 def simulate_days(dataset, scope):
     days = 0
     total = 0
@@ -90,26 +88,25 @@ def simulate_days(dataset, scope):
     completion_date = START_DATE + pd.Timedelta(days, unit='d')
     return completion_date
 
-
 dataset = throughput[['Throughput']].tail(LAST_DAYS).reset_index(drop=True)
-samples = [simulate_days(dataset, SIMULATION_ITEMS)
-           for i in range(SIMULATIONS)]
+samples = [simulate_days(dataset, SIMULATION_ITEMS) for i in range(SIMULATIONS)]
 samples = pd.DataFrame(samples, columns=['Date'])
 distribution = samples.groupby(['Date']).size().reset_index(name='Frequency')
 
 plt.figure(figsize=(20, 6))
 ax = sns.barplot(x='Date', y='Frequency', data=distribution, color=barblue)
-ax.set_title(f"Distribution of Monte Carlo Simulation 'When' ({SIMULATIONS} Runs)", loc='left',
-             fontdict={'size': 18, 'weight': 'semibold'})
+ax.set_title(f"Distribution of Monte Carlo Simulation 'When' ({SIMULATIONS} Runs)", loc='left', fontdict={'size': 18, 'weight': 'semibold'})
 ax.set_xlabel(f"Completion Date for {SIMULATION_ITEMS} Items")
 ax.set_ylabel('Frequency')
 unique_dates = sorted(list(distribution['Date'].drop_duplicates()))
 date_ticks = range(0, len(unique_dates), 5)
 ax.set_xticks(date_ticks)
-ax.set_xticklabels([unique_dates[i].strftime('%d %b')
-                    for i in date_ticks], rotation=45)
-ax.axhline(y=SIMULATIONS*0.001, color=darkgrey, alpha=.5);
+ax.set_xticklabels([unique_dates[i].strftime('%d %b') for i in date_ticks], rotation=45)
+ax.axhline(y=0, color='lightgrey', alpha=.5)  # Replace the line to start from y=0
+ax.set_ylim(bottom=0)  # Set the y-axis bottom limit to 0
+ax.axhline(y=0, color='lightgrey', linewidth=1)
 
+plt.show()
 
 
 
@@ -149,5 +146,3 @@ ax.set_xticklabels([unique_dates[i].strftime('%d %b')
                     for i in date_ticks], rotation=45)
 
 plt.show()
-
-# %%
