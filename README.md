@@ -1,35 +1,76 @@
 # Monte Carlo Simulations for a Kanban/Agile Flow
 
+<br><br>
+<br><br>
+
 ## WHY - Facts over Opinions
-Estimates are based on gut feeling. Gut feeling is subjective and situative. It is intangible and hard to quantify and share. On the other hand, data can be measured, collected, reported, and analyzed — even visualized. It can objectify discussions and enrich decision making through forecasts.
 
-Benefits of forecasting with a monte carlo simulation instead of estimating (in Story Points):
-* Save time of scarce ressources (the team): No planning poker.
-* More realistic planning: Data basis of the past includes everything (vacations, sick days, outliers, ...)
-* The forecast can be discussed and enrich decision making by chosing the risk the team/management wants to take.
+Estimates are based on gut feeling, which means they're subjective and circumstancial. Being intangible and hard to quantify, they're not very realiable indicators to share. 
 
-Further thoughts on Agile metrics and #NoEstimates (with a focus on how to collect data and use it with a sense of responsibility):
-[You must be this tall to use agile metrics](https://medium.com/@jabopiti/you-must-be-this-tall-to-use-agile-metrics-9d2e3b4d4e20)
+On the other hand, data can be measured, collected, reported, and analyzed — even visualized. It can enable data-driven discussions and enrich decision making through forecasts.
 
-## HOW - Building a Monte Carlo Simulation Based on Historical Throughput Data
-The idea is to use [Monte Carlo Simulation](https://simple.wikipedia.org/wiki/Monte_Carlo_algorithm) based on historical throughput data to determine a probable range of delivery dates or of total items completed.
+Benefits of forecasting with a [Monte Carlo Simulation](https://simple.wikipedia.org/wiki/Monte_Carlo_algorithm) instead of estimating (in Story Points): 
+- Save the team member's time in estimating,
+- More realistic planning: data collected from the past includes everything (vacations, sick days, outliers, ...)
+- The forecast can be discussed and enrich decision making by chosing the risk the team/management wants to take.
 
-## WHAT - Using the Simulation Results to Enrich Decision-Making
-In this repository are two Jupyter Notebooks. Each of them generates a notebook calculating the throughput and running a monte carlo simulation to determine how many items can be completed in a given time range or when a given scope of items can be completed. The result of a monte carlo simulation is a visualiziation mapping the probability and the outcome.
+Further thoughts on Agile metrics and #NoEstimates (with a focus on how to collect data and use it with a sense of responsibility): [You must be this tall to use agile metrics](https://medium.com/@jabopiti/you-must-be-this-tall-to-use-agile-metrics-9d2e3b4d4e20)
 
-The notebook represents a decision-making basis to determine the risk a team/management wants to take to achieve a specific outcome. A 70% probability is risky, a 85% probability is moderate, and a 95% probability is the safe option.
+<br><br>
 
-The notebooks are filled with an example to get a better idea on how to use them.
+## Instructions to prepare the dataset exported from Jira
 
-Conditions:
-* You need a instance of Jupyter Notebook and Python >3.6 to run the notebooks
-* The notebooks use data extracted from Jira with [Jira-to-Analytics](https://github.com/ActionableAgile/jira-to-analytics).
+Depending on the system you have your data stored (Jira, or other), you should be able to export the data.
 
-### Kanban-Monte_Carlo-How-Many.ipynb
-Determine how many items can be completed in a given time range.
+<br><br>
+The format of the CSV will show:
 
-### Kanban-Monte_Carlo-When.ipynb
-Determine when a given scope of items can be completed.
+- Criteria:
+    - Project: 
+        - Name of the Project in Jira
+    - Issue types: 
+        - Epic
+        - Story
+        - Task
+        - Sub-task
+        - Bug
+    - Issue resolution Date: 2018-07-13
 
-## License
-MIT
+For the purpose of the simulation only the *Bug*, *Story* and *Task* will be considered.
+
+
+<br><br>
+
+## How to run the code in this repo
+
+### If you already have VSCode installed + Python
+
+Then go to the *Extensions* pane on the left menu and search for Jupyter and install the following ones (Provider = **Microsoft**):
+- Jupyter
+- Jupyter Cell Tags
+- Jupyter Keymap
+- Jupyter Notebook Renderers
+
+After the installation, you can open the [MCS_When notebook](Generator/MCS_When.ipynb)
+
+### If you don't have VSCode installed
+
+In order to use the tool and generate the results, you'll need to:
+1. Install an IDE. I recommend VSCode: download [here](https://code.visualstudio.com/download)
+2. Then open the terminal and install:
+- [Python](https://realpython.com/installing-python/)
+- [Jupyter Notebooks](https://towardsdatascience.com/installing-jupyter-notebook-support-in-visual-studio-code-91887d644c5d)
+- [pandas](https://pandas.pydata.org/docs/getting_started/install.html) 
+- [matplotlib](https://matplotlib.org/stable/users/installing/index.html)
+- [seaborn](https://seaborn.pydata.org/installing.html)
+3. Then go to the *Extensions* pane on the left menu and search for Jupyter and install the following ones (Provider = **Microsoft**):
+- Jupyter
+- Jupyter Cell Tags
+- Jupyter Keymap
+- Jupyter Notebook Renderers 
+
+<br><br>
+<br><br>
+
+## Authors and acknowledgment
+This has been adapted/forked from [Repo with code leverating ActionableAgile's tools](https://github.com/jabopiti/kanban-monte-carlo-simulation)
