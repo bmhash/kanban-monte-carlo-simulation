@@ -1,0 +1,148 @@
+# %%
+import pandas as pd
+from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
+import seaborn as sns
+from pandas.plotting import register_matplotlib_converters
+
+# %%
+# Prepare the baseline layout for the charts
+register_matplotlib_converters()
+
+plt.style.use('fivethirtyeight')
+plt.rcParams['axes.labelsize'] = 14
+plt.rcParams['lines.linewidth'] = 1.5
+darkgrey = '#3A3A3A'
+lightgrey = '#414141'
+barblue = plt.rcParams['axes.prop_cycle'].by_key()['color'][0]
+plt.rcParams['text.color'] = darkgrey
+plt.rcParams['axes.labelcolor'] = darkgrey
+plt.rcParams['xtick.color'] = lightgrey
+plt.rcParams['ytick.color'] = lightgrey
+
+
+# %%
+# Load Data from CSV and extract only the date in the Done column
+
+kanban_data = pd.read_csv('data/data.csv',
+                          header=0,
+                          usecols=['Type', 'Done'],
+                          parse_dates=['Done']).dropna()
+
+# print results
+kanban_data.head(1)
+
+
+
+# %%
+
+# Generate the throughput per week chart
+
+# create contingency table 
+throughput = pd.crosstab(
+    kanban_data.Done, kanban_data.Type, colnames=[None]).reset_index()
+
+# select only Bug, Story and Task from ticket types
+throughput['Throughput'] = throughput.Bug + throughput.Story + throughput.Task
+
+# generate daily dates from date range from input source data
+date_range = pd.date_range(
+    start=throughput.Done.min(), 
+    end=throughput.Done.max())
+
+# prepare throughput dataframe indexed by the date_range and resolution dates
+throughput = throughput.set_index('Done').reindex(
+    date_range).fillna(0).astype(int).rename_axis('Date')
+
+# create the final dataframe version to generate chart
+throughput_per_week = pd.DataFrame(
+    throughput['Throughput'].resample('W-Mon').sum()).reset_index()
+
+# generate the chart
+ax = throughput_per_week.plot(
+    x='Date', y='Throughput', linewidth=2.5, figsize=(14, 3), legend=None)
+ax.set_title("Throughput per Week", loc='left', fontdict={
+             'fontsize': 18, 'fontweight': 'semibold'})
+ax.set_xlabel('')
+ax.set_ylabel('Items Completed')
+ax.axhline(y=0, color=lightgrey, alpha=.5);
+
+
+
+# %%
+
+# Monte Carlo Simulation with results generated in a histogram
+
+### SETTINGS ####
+LAST_DAYS = 180
+SIMULATION_ITEMS = 100
+START_DATE = pd.to_datetime('2023-07-04')
+SIMULATIONS = 10000
+
+def simulate_days(dataset, scope):
+    days = 0
+    total = 0
+    while total <= scope:
+        total += dataset.sample(n=1).iloc[0].Throughput
+        days += 1
+    completion_date = START_DATE + pd.Timedelta(days, unit='d')
+    return completion_date
+
+dataset = throughput[['Throughput']].tail(LAST_DAYS).reset_index(drop=True)
+samples = [simulate_days(dataset, SIMULATION_ITEMS) for i in range(SIMULATIONS)]
+samples = pd.DataFrame(samples, columns=['Date'])
+distribution = samples.groupby(['Date']).size().reset_index(name='Frequency')
+
+plt.figure(figsize=(20, 6))
+ax = sns.barplot(x='Date', y='Frequency', data=distribution, color=barblue)
+ax.set_title(f"Distribution of Monte Carlo Simulation 'When' ({SIMULATIONS} Runs)", loc='left', fontdict={'size': 18, 'weight': 'semibold'})
+ax.set_xlabel(f"Completion Date for {SIMULATION_ITEMS} Items")
+ax.set_ylabel('Frequency')
+unique_dates = sorted(list(distribution['Date'].drop_duplicates()))
+date_ticks = range(0, len(unique_dates), 5)
+ax.set_xticks(date_ticks)
+ax.set_xticklabels([unique_dates[i].strftime('%d %b') for i in date_ticks], rotation=45)
+ax.axhline(y=0, color='lightgrey', alpha=.5)  # Replace the line to start from y=0
+ax.set_ylim(bottom=0)  # Set the y-axis bottom limit to 0
+ax.axhline(y=0, color='lightgrey', linewidth=1)
+
+plt.show()
+
+
+
+# %%
+distribution = distribution.sort_index(ascending=False)
+distribution['Probability'] = 100 * \
+    distribution.Frequency.cumsum()/distribution.Frequency.sum()
+
+plt.figure(figsize=(14, 5))
+ax = sns.barplot(x='Date', y='Probability', data=distribution, color=barblue)
+ax.text(x=-1.4, y=118,
+        s=f"Probabilities of Completion Dates for {SIMULATION_ITEMS} Items", fontsize=18, fontweight='semibold')
+ax.text(x=-1.4, y=110,
+        s=f"Based on a Monte Carlo Simulations ({SIMULATIONS} Runs) with data of last {LAST_DAYS} days", fontsize=16)
+ax.set_ylabel('')
+ax.set_xlabel('')
+ax.axhline(y=0.5, color='darkgrey', alpha=.5)
+ax.axhline(y=70, color='darkgrey', linestyle='--')
+ax.axhline(y=85, color='darkgrey', linestyle='--')
+ax.axhline(y=95, color='darkgrey', linestyle='--')
+
+label_xpos = distribution['Date'].max() - pd.Timedelta(30, unit='d')
+ax.text(y=70, x=20, s=f"70% ({distribution.Date.quantile(0.7).strftime('%Y-%m-%d')})",
+        va='center', ha='center', backgroundcolor='#F0F0F0')
+ax.text(y=85, x=20, s=f"85% ({distribution.Date.quantile(0.85).strftime('%Y-%m-%d')})",
+        va='center', ha='center', backgroundcolor='#F0F0F0')
+ax.text(y=95, x=20, s=f"95% ({distribution.Date.quantile(0.95).strftime('%Y-%m-%d')})",
+        va='center', ha='center', backgroundcolor='#F0F0F0')
+
+ax.set_yticks([0, 20, 40, 60, 80, 100])
+ax.set_yticklabels(labels=['0', '20', '40', '60', '80', '100%'])
+
+unique_dates = sorted(list(distribution.Date.drop_duplicates()))
+date_ticks = range(0, len(unique_dates), 5)
+ax.set_xticks(date_ticks)
+ax.set_xticklabels([unique_dates[i].strftime('%d %b')
+                    for i in date_ticks], rotation=45)
+
+plt.show()
