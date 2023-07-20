@@ -79,7 +79,7 @@ SIMULATION_ITEMS = 100
 START_DATE = pd.to_datetime('2023-07-04')
 SIMULATIONS = 10000
 
-def simulate_days(dataset, scope):
+def simulate_days(data, scope):
     days = 0
     total = 0
     while total <= scope:
